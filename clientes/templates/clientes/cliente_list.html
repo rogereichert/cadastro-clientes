@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+  <div class="flex items-start justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold">Clientes</h1>
+      <p class="text-slate-300 text-sm mt-1">Lista de clientes ativos cadastrados.</p>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-white/5 text-slate-300">
+        <tr>
+          <th class="text-left font-medium px-4 py-3">Nome</th>
+          <th class="text-left font-medium px-4 py-3">Documento</th>
+          <th class="text-left font-medium px-4 py-3">Email</th>
+          <th class="text-left font-medium px-4 py-3">Telefone</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/10">
+        {% for c in clientes %}
+          <tr class="hover:bg-white/5">
+            <td class="px-4 py-3">{{ c.nome }}</td>
+            <td class="px-4 py-3">{{ c.documento }}</td>
+            <td class="px-4 py-3">{{ c.email|default:"—" }}</td>
+            <td class="px-4 py-3">{{ c.telefone|default:"—" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="px-4 py-6 text-slate-300" colspan="4">Nenhum cliente cadastrado.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
