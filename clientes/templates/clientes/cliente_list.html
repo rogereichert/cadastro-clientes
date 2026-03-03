@@ -14,21 +14,31 @@
 
     <!-- Ações (visual SaaS) -->
     <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
-      <!-- Busca (visual por enquanto) -->
-      <div class="relative">
+
+      <!-- ✅ Busca (AGORA FUNCIONA com ?q=...) -->
+      <form method="get" class="relative">
         <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
+
         <input
           type="text"
+          name="q"
+          value="{{ q|default:'' }}"
           placeholder="Buscar por nome, documento, email…"
           class="w-full sm:w-[360px] rounded-xl border border-white/10 bg-white/5
-                 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-500
+                 pl-9 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500
                  outline-none focus:border-white/20 focus:bg-white/7 transition"
         />
-      </div>
 
-      <!-- Botão Novo (vai virar link real quando criarmos o create) -->
+        {% if q %}
+          <a href="{% url 'clientes:list' %}"
+             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">
+            Limpar
+          </a>
+        {% endif %}
+      </form>
+
+      <!-- Botão Novo -->
       <a href="{% url 'clientes:create' %}"
-         title="Em breve (vamos criar no CRUD)"
          class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
                 border border-white/10 bg-white/10 hover:bg-white/15 transition">
         <span class="text-base leading-none">＋</span>
@@ -75,7 +85,7 @@
                   <div class="leading-tight">
                     <div class="font-medium text-slate-100">{{ c.nome }}</div>
 
-                    <!-- Badge status (mesmo listando ativos, fica pronto pro futuro) -->
+                    <!-- Badge status -->
                     <div class="mt-1">
                       {% if c.is_arquivado %}
                         <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs
@@ -126,7 +136,6 @@
 
                   <div class="mt-4">
                     <a href="{% url 'clientes:create' %}"
-                       title="Em breve (CRUD)"
                        class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
                               border border-white/10 bg-white/10 hover:bg-white/15 transition">
                       <span class="text-base leading-none">＋</span>
