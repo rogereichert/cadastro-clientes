@@ -27,7 +27,7 @@
       </div>
 
       <!-- Botão Novo (vai virar link real quando criarmos o create) -->
-      <a href="#"
+      <a href="{% url 'clientes:create' %}"
          title="Em breve (vamos criar no CRUD)"
          class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
                 border border-white/10 bg-white/10 hover:bg-white/15 transition">
@@ -125,7 +125,7 @@
                   </div>
 
                   <div class="mt-4">
-                    <a href="#"
+                    <a href="{% url 'clientes:create' %}"
                        title="Em breve (CRUD)"
                        class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
                               border border-white/10 bg-white/10 hover:bg-white/15 transition">
