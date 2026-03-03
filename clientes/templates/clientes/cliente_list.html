@@ -3,37 +3,142 @@
 {% block title %}Clientes{% endblock %}
 
 {% block content %}
-  <div class="flex items-start justify-between gap-4 mb-6">
+  <!-- Header da página -->
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-semibold">Clientes</h1>
-      <p class="text-slate-300 text-sm mt-1">Lista de clientes ativos cadastrados.</p>
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Clientes</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Gerencie seus clientes ativos cadastrados.
+      </p>
+    </div>
+
+    <!-- Ações (visual SaaS) -->
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+      <!-- Busca (visual por enquanto) -->
+      <div class="relative">
+        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
+        <input
+          type="text"
+          placeholder="Buscar por nome, documento, email…"
+          class="w-full sm:w-[360px] rounded-xl border border-white/10 bg-white/5
+                 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-500
+                 outline-none focus:border-white/20 focus:bg-white/7 transition"
+        />
+      </div>
+
+      <!-- Botão Novo (vai virar link real quando criarmos o create) -->
+      <a href="#"
+         title="Em breve (vamos criar no CRUD)"
+         class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+                border border-white/10 bg-white/10 hover:bg-white/15 transition">
+        <span class="text-base leading-none">＋</span>
+        Novo cliente
+      </a>
     </div>
   </div>
 
-  <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-white/5 text-slate-300">
-        <tr>
-          <th class="text-left font-medium px-4 py-3">Nome</th>
-          <th class="text-left font-medium px-4 py-3">Documento</th>
-          <th class="text-left font-medium px-4 py-3">Email</th>
-          <th class="text-left font-medium px-4 py-3">Telefone</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-white/10">
-        {% for c in clientes %}
-          <tr class="hover:bg-white/5">
-            <td class="px-4 py-3">{{ c.nome }}</td>
-            <td class="px-4 py-3">{{ c.documento }}</td>
-            <td class="px-4 py-3">{{ c.email|default:"—" }}</td>
-            <td class="px-4 py-3">{{ c.telefone|default:"—" }}</td>
-          </tr>
-        {% empty %}
+  <!-- Card principal -->
+  <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur overflow-hidden">
+    <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+      <div class="text-sm text-slate-300">
+        <span class="text-slate-100 font-medium">{{ clientes|length }}</span>
+        ativo{{ clientes|length|pluralize }}
+      </div>
+      <div class="text-xs text-slate-500">
+        Dica: ações aparecem ao passar o mouse
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-slate-400 bg-white/5">
           <tr>
-            <td class="px-4 py-6 text-slate-300" colspan="4">Nenhum cliente cadastrado.</td>
+            <th class="text-left font-medium px-4 py-3">Cliente</th>
+            <th class="text-left font-medium px-4 py-3">Documento</th>
+            <th class="text-left font-medium px-4 py-3">Email</th>
+            <th class="text-left font-medium px-4 py-3">Telefone</th>
+            <th class="text-right font-medium px-4 py-3 w-[180px]">Ações</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody class="divide-y divide-white/10">
+          {% for c in clientes %}
+            <tr class="group hover:bg-white/5 transition">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center">
+                    <span class="text-xs font-semibold text-slate-200">
+                      {{ c.nome|slice:":1"|upper }}
+                    </span>
+                  </div>
+
+                  <div class="leading-tight">
+                    <div class="font-medium text-slate-100">{{ c.nome }}</div>
+
+                    <!-- Badge status (mesmo listando ativos, fica pronto pro futuro) -->
+                    <div class="mt-1">
+                      {% if c.is_arquivado %}
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs
+                                     border border-white/10 bg-white/5 text-slate-300">
+                          Arquivado
+                        </span>
+                      {% else %}
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs
+                                     border border-emerald-500/20 bg-emerald-500/10 text-emerald-200">
+                          Ativo
+                        </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-4 py-3 text-slate-200">{{ c.documento }}</td>
+              <td class="px-4 py-3 text-slate-200">{{ c.email|default:"—" }}</td>
+              <td class="px-4 py-3 text-slate-200">{{ c.telefone|default:"—" }}</td>
+
+              <!-- Ações: aparecem no hover -->
+              <td class="px-4 py-3 text-right">
+                <div class="inline-flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                  <a href="#"
+                     title="Em breve (CRUD)"
+                     class="rounded-lg px-3 py-1.5 text-xs font-medium
+                            border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                    Editar
+                  </a>
+                  <a href="#"
+                     title="Em breve (arquivar/reativar na UI)"
+                     class="rounded-lg px-3 py-1.5 text-xs font-medium
+                            border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                    Arquivar
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="px-4 py-10">
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+                  <div class="text-slate-100 font-medium">Nenhum cliente cadastrado</div>
+                  <div class="text-sm text-slate-400 mt-1">
+                    Cadastre o primeiro cliente para começar.
+                  </div>
+
+                  <div class="mt-4">
+                    <a href="#"
+                       title="Em breve (CRUD)"
+                       class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+                              border border-white/10 bg-white/10 hover:bg-white/15 transition">
+                      <span class="text-base leading-none">＋</span>
+                      Novo cliente
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endblock %}
