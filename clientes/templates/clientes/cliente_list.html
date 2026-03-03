@@ -1,46 +1,32 @@
-{% extends "base/base.html" %}
+{% extends 'base/base.html' %}
 
-{% block title %}Clientes{% endblock %}
+{% block title %}
+  Clientes
+{% endblock %}
 
 {% block content %}
   <!-- Header da página -->
   <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
     <div>
       <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Clientes</h1>
-      <p class="text-sm text-slate-400 mt-1">
-        Gerencie seus clientes ativos cadastrados.
-      </p>
+      <p class="text-sm text-slate-400 mt-1">Gerencie seus clientes ativos cadastrados.</p>
     </div>
 
     <!-- Ações (visual SaaS) -->
     <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
-
       <!-- ✅ Busca (AGORA FUNCIONA com ?q=...) -->
       <form method="get" class="relative">
         <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
 
-        <input
-          type="text"
-          name="q"
-          value="{{ q|default:'' }}"
-          placeholder="Buscar por nome, documento, email…"
-          class="w-full sm:w-[360px] rounded-xl border border-white/10 bg-white/5
-                 pl-9 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500
-                 outline-none focus:border-white/20 focus:bg-white/7 transition"
-        />
+        <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Buscar por nome, documento, email…" class="w-full sm:w-[360px] rounded-xl border border-white/10 bg-white/5 pl-9 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-white/20 focus:bg-white/7 transition" />
 
         {% if q %}
-          <a href="{% url 'clientes:list' %}"
-             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">
-            Limpar
-          </a>
+          <a href="{% url 'clientes:list' %}" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">Limpar</a>
         {% endif %}
       </form>
 
       <!-- Botão Novo -->
-      <a href="{% url 'clientes:create' %}"
-         class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
-                border border-white/10 bg-white/10 hover:bg-white/15 transition">
+      <a href="{% url 'clientes:create' %}" class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border border-white/10 bg-white/10 hover:bg-white/15 transition">
         <span class="text-base leading-none">＋</span>
         Novo cliente
       </a>
@@ -54,9 +40,7 @@
         <span class="text-slate-100 font-medium">{{ clientes|length }}</span>
         ativo{{ clientes|length|pluralize }}
       </div>
-      <div class="text-xs text-slate-500">
-        Dica: ações aparecem ao passar o mouse
-      </div>
+      <div class="text-xs text-slate-500">Dica: ações aparecem ao passar o mouse</div>
     </div>
 
     <div class="overflow-x-auto">
@@ -77,9 +61,7 @@
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
                   <div class="h-9 w-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center">
-                    <span class="text-xs font-semibold text-slate-200">
-                      {{ c.nome|slice:":1"|upper }}
-                    </span>
+                    <span class="text-xs font-semibold text-slate-200">{{ c.nome|slice:':1'|upper }}</span>
                   </div>
 
                   <div class="leading-tight">
@@ -88,15 +70,9 @@
                     <!-- Badge status -->
                     <div class="mt-1">
                       {% if c.is_arquivado %}
-                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs
-                                     border border-white/10 bg-white/5 text-slate-300">
-                          Arquivado
-                        </span>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs border border-white/10 bg-white/5 text-slate-300">Arquivado</span>
                       {% else %}
-                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs
-                                     border border-emerald-500/20 bg-emerald-500/10 text-emerald-200">
-                          Ativo
-                        </span>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs border border-emerald-500/20 bg-emerald-500/10 text-emerald-200">Ativo</span>
                       {% endif %}
                     </div>
                   </div>
@@ -104,24 +80,14 @@
               </td>
 
               <td class="px-4 py-3 text-slate-200">{{ c.documento }}</td>
-              <td class="px-4 py-3 text-slate-200">{{ c.email|default:"—" }}</td>
-              <td class="px-4 py-3 text-slate-200">{{ c.telefone|default:"—" }}</td>
+              <td class="px-4 py-3 text-slate-200">{{ c.email|default:'—' }}</td>
+              <td class="px-4 py-3 text-slate-200">{{ c.telefone|default:'—' }}</td>
 
               <!-- Ações: aparecem no hover -->
               <td class="px-4 py-3 text-right">
                 <div class="inline-flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                  <a href="#"
-                     title="Em breve (CRUD)"
-                     class="rounded-lg px-3 py-1.5 text-xs font-medium
-                            border border-white/10 bg-white/5 hover:bg-white/10 transition">
-                    Editar
-                  </a>
-                  <a href="#"
-                     title="Em breve (arquivar/reativar na UI)"
-                     class="rounded-lg px-3 py-1.5 text-xs font-medium
-                            border border-white/10 bg-white/5 hover:bg-white/10 transition">
-                    Arquivar
-                  </a>
+                  <a href="#" title="Em breve (CRUD)" class="rounded-lg px-3 py-1.5 text-xs font-medium border border-white/10 bg-white/5 hover:bg-white/10 transition">Editar</a>
+                  <a href="#" title="Em breve (arquivar/reativar na UI)" class="rounded-lg px-3 py-1.5 text-xs font-medium border border-white/10 bg-white/5 hover:bg-white/10 transition">Arquivar</a>
                 </div>
               </td>
             </tr>
@@ -130,14 +96,10 @@
               <td colspan="5" class="px-4 py-10">
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
                   <div class="text-slate-100 font-medium">Nenhum cliente cadastrado</div>
-                  <div class="text-sm text-slate-400 mt-1">
-                    Cadastre o primeiro cliente para começar.
-                  </div>
+                  <div class="text-sm text-slate-400 mt-1">Cadastre o primeiro cliente para começar.</div>
 
                   <div class="mt-4">
-                    <a href="{% url 'clientes:create' %}"
-                       class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
-                              border border-white/10 bg-white/10 hover:bg-white/15 transition">
+                    <a href="{% url 'clientes:create' %}" class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border border-white/10 bg-white/10 hover:bg-white/15 transition">
                       <span class="text-base leading-none">＋</span>
                       Novo cliente
                     </a>
@@ -150,4 +112,99 @@
       </table>
     </div>
   </div>
+  {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="text-sm text-slate-400">
+        Página <span class="text-slate-200 font-medium">{{ page_obj.number }}</span>
+        de <span class="text-slate-200 font-medium">{{ page_obj.paginator.num_pages }}</span>
+        • Total: <span class="text-slate-200 font-medium">{{ page_obj.paginator.count }}</span>
+      </div>
+
+      <nav class="inline-flex items-center gap-2">
+        <!-- Prev -->
+        {% if page_obj.has_previous %}
+          <a href="?{% if q %}
+              q={{ q|urlencode }}&
+            {% endif %}page={{ page_obj.previous_page_number }}"
+            class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition">
+            ← Anterior
+          </a>
+        {% else %}
+          <span class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 text-slate-500 cursor-not-allowed">← Anterior</span>
+        {% endif %}
+
+        <!-- Pages (Linear-like: janela ao redor + 1ª e última com …) -->
+        <div class="hidden sm:inline-flex items-center gap-2">
+          {% with current=page_obj.number total=page_obj.paginator.num_pages %}
+            {# Sempre mostra página 1 #}
+            <a href="?{% if q %}
+                q={{ q|urlencode }}&
+              {% endif %}page=1"
+              class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                   {% if current == 1 %}
+                bg-white/15
+              {% else %}
+                bg-white/5 hover:bg-white/10
+              {% endif %} transition">
+              1
+            </a>
+
+            {# Se estiver longe do começo, mostra ... #}
+            {% if current > 4 %}
+              <span class="text-slate-500 px-1">…</span>
+            {% endif %}
+
+            {# Janela central: current-2 até current+2 (limitada) #}
+            {% for n in page_obj.paginator.page_range %}
+              {% if n != 1 and n != total and n >= current|add:'-2' and n <= current|add:'2' %}
+                <a href="?{% if q %}
+                    q={{ q|urlencode }}&
+                  {% endif %}page={{ n }}"
+                  class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                       {% if n == current %}
+                    bg-white/15
+                  {% else %}
+                    bg-white/5 hover:bg-white/10
+                  {% endif %} transition">
+                  {{ n }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {# Se estiver longe do fim, mostra ... #}
+            {% if current < total|add:'-3' %}
+              <span class="text-slate-500 px-1">…</span>
+            {% endif %}
+
+            {# Sempre mostra última página (se tiver mais de 1) #}
+            {% if total > 1 %}
+              <a href="?{% if q %}
+                  q={{ q|urlencode }}&
+                {% endif %}page={{ total }}"
+                class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                     {% if current == total %}
+                  bg-white/15
+                {% else %}
+                  bg-white/5 hover:bg-white/10
+                {% endif %} transition">
+                {{ total }}
+              </a>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <!-- Next -->
+        {% if page_obj.has_next %}
+          <a href="?{% if q %}
+              q={{ q|urlencode }}&
+            {% endif %}page={{ page_obj.next_page_number }}"
+            class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition">
+            Próxima →
+          </a>
+        {% else %}
+          <span class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 text-slate-500 cursor-not-allowed">Próxima →</span>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
 {% endblock %}
