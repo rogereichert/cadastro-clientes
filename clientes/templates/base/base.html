@@ -1,55 +1,284 @@
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Cadastro{% endblock %}</title>
+{% extends "base/base.html" %}
 
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+{% block title %}Clientes{% endblock %}
 
-  <body class="min-h-screen bg-[#0B0F19] text-slate-100">
-    <!-- Background glow (bem Linear) -->
-    <div class="pointer-events-none fixed inset-0">
-      <div class="absolute -top-40 left-1/2 h-[520px] w-[920px] -translate-x-1/2 rounded-full
-                  bg-gradient-to-r from-indigo-500/15 via-sky-500/10 to-fuchsia-500/15 blur-3xl"></div>
-      <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/60"></div>
+{% block content %}
+  <!-- HERO / HEADER -->
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
+    <div>
+      <div class="inline-flex items-center gap-2 text-xs text-slate-400">
+        <span class="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">Workspace</span>
+        <span>Clientes</span>
+      </div>
+
+      <h1 class="mt-2 text-2xl md:text-3xl font-semibold tracking-tight">
+        Client Dashboard
+      </h1>
+
+      <p class="text-sm text-slate-400 mt-1 max-w-2xl">
+        Uma visão moderna do seu cadastro: busca rápida, cards ricos e navegação fluida.
+      </p>
     </div>
 
-    <header class="sticky top-0 z-40 border-b border-white/10 bg-[#0B0F19]/70 backdrop-blur">
-      <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-        <a href="{% url 'clientes:list' %}" class="flex items-center gap-2 group">
-          <div class="h-9 w-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center">
-            <span class="text-sm font-semibold tracking-tight">FC</span>
-          </div>
-          <div class="leading-tight">
-            <div class="text-sm font-semibold tracking-tight group-hover:opacity-90">Cadastro de Clientes</div>
-            <div class="text-xs text-slate-400">Django • Tailwind CDN</div>
-          </div>
-        </a>
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+      <!-- Search -->
+      <form method="get" class="relative">
+        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
 
-        <nav class="text-sm text-slate-300">
-          <a class="rounded-lg px-3 py-2 hover:bg-white/5 hover:text-slate-100 transition"
-             href="{% url 'clientes:list' %}">
-            Clientes
+        <input
+          type="text"
+          name="q"
+          value="{{ q|default:'' }}"
+          placeholder="Buscar por nome, documento, email, telefone…"
+          class="w-full sm:w-[420px] rounded-xl border border-white/10 bg-white/5
+                 pl-9 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500
+                 outline-none focus:border-white/20 focus:bg-white/7 transition"
+        />
+
+        {% if q %}
+          <a href="{% url 'clientes:list' %}"
+             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">
+            Limpar
           </a>
-        </nav>
+        {% endif %}
+      </form>
+
+      <!-- Primary CTA -->
+      <a href="{% url 'clientes:create' %}"
+         class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+                border border-white/10 bg-white/10 hover:bg-white/15 transition">
+        <span class="text-base leading-none">＋</span>
+        Novo cliente
+      </a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <!-- Total geral -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4">
+      <div class="text-xs text-slate-400">Total (base filtrada)</div>
+      <div class="mt-2 text-2xl font-semibold tracking-tight text-slate-100">
+        {{ page_obj.paginator.count|default:0 }}
       </div>
-    </header>
+      <div class="mt-1 text-xs text-slate-500">Registros encontrados</div>
+    </div>
 
-    <main class="relative mx-auto max-w-6xl px-4 py-8">
-      {% if messages %}
-        <div class="space-y-3 mb-6">
-          {% for message in messages %}
-            <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
-              {{ message }}
+    <!-- Página atual -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4">
+      <div class="text-xs text-slate-400">Nesta página</div>
+      <div class="mt-2 text-2xl font-semibold tracking-tight text-slate-100">
+        {{ clientes|length }}
+      </div>
+      <div class="mt-1 text-xs text-slate-500">Clientes exibidos</div>
+    </div>
+
+    <!-- Status visual (placeholder do futuro toggle) -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4">
+      <div class="text-xs text-slate-400">Modo</div>
+      <div class="mt-2 inline-flex items-center gap-2">
+        <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+        <span class="text-sm font-medium text-slate-100">Ativos</span>
+      </div>
+      <div class="mt-1 text-xs text-slate-500">Arquivados fica pro próximo passo</div>
+    </div>
+
+    <!-- Dica -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4">
+      <div class="text-xs text-slate-400">Dica rápida</div>
+      <div class="mt-2 text-sm text-slate-200">
+        Passe o mouse nos cards para ver ações.
+      </div>
+      <div class="mt-1 text-xs text-slate-500">UX estilo SaaS</div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  {% if clientes %}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {% for c in clientes %}
+        <div class="group rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5
+                    hover:bg-white/7 hover:border-white/15 transition overflow-hidden">
+          <!-- top row -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="h-10 w-10 rounded-xl border border-white/10 bg-white/5 grid place-items-center">
+                <span class="text-sm font-semibold text-slate-200">
+                  {{ c.nome|slice:":1"|upper }}
+                </span>
+              </div>
+
+              <div class="leading-tight">
+                <div class="text-base font-semibold tracking-tight text-slate-100">
+                  {{ c.nome }}
+                </div>
+                <div class="mt-1 text-xs text-slate-400">
+                  {{ c.tipo_documento }} • {{ c.documento }}
+                </div>
+              </div>
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
 
-      {% block content %}{% endblock %}
-    </main>
-  </body>
-</html>
+            <!-- badge -->
+            {% if c.is_arquivado %}
+              <span class="shrink-0 inline-flex items-center rounded-full px-2 py-1 text-xs
+                           border border-white/10 bg-white/5 text-slate-300">
+                Arquivado
+              </span>
+            {% else %}
+              <span class="shrink-0 inline-flex items-center rounded-full px-2 py-1 text-xs
+                           border border-emerald-500/20 bg-emerald-500/10 text-emerald-200">
+                Ativo
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- details -->
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-slate-400">Email</div>
+              <div class="text-slate-200 truncate max-w-[70%]">{{ c.email|default:"—" }}</div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-slate-400">Telefone</div>
+              <div class="text-slate-200 truncate max-w-[70%]">{{ c.telefone|default:"—" }}</div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-slate-400">Cidade</div>
+              <div class="text-slate-200 truncate max-w-[70%]">{{ c.cidade|default:"—" }}</div>
+            </div>
+          </div>
+
+          <!-- actions -->
+          <div class="mt-5 flex items-center justify-between gap-3">
+            <div class="text-xs text-slate-500">
+              ID #{{ c.id }}
+            </div>
+
+            <div class="inline-flex gap-2 opacity-0 group-hover:opacity-100 transition">
+              <!-- Ainda não temos edit/detail, mas já fica com cara de produto -->
+              <a href="#"
+                 title="Em breve: detalhe"
+                 class="rounded-lg px-3 py-1.5 text-xs font-medium border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                Abrir
+              </a>
+              <a href="#"
+                 title="Em breve: editar"
+                 class="rounded-lg px-3 py-1.5 text-xs font-medium border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                Editar
+              </a>
+            </div>
+          </div>
+
+          <!-- subtle accent line -->
+          <div class="pointer-events-none mt-5 h-px w-full bg-gradient-to-r from-indigo-500/20 via-sky-500/10 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 transition"></div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <!-- EMPTY STATE -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-8 text-center">
+      <div class="mx-auto h-12 w-12 rounded-2xl border border-white/10 bg-white/5 grid place-items-center text-slate-200">
+        ＋
+      </div>
+      <div class="mt-4 text-lg font-semibold text-slate-100">Nada por aqui ainda</div>
+      <div class="mt-1 text-sm text-slate-400">
+        Cadastre seu primeiro cliente para começar o workspace.
+      </div>
+      <div class="mt-5">
+        <a href="{% url 'clientes:create' %}"
+           class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+                  border border-white/10 bg-white/10 hover:bg-white/15 transition">
+          <span class="text-base leading-none">＋</span>
+          Novo cliente
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- PAGINATION (Linear style) -->
+  {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="text-sm text-slate-400">
+        Página <span class="text-slate-200 font-medium">{{ page_obj.number }}</span>
+        de <span class="text-slate-200 font-medium">{{ page_obj.paginator.num_pages }}</span>
+        • Total: <span class="text-slate-200 font-medium">{{ page_obj.paginator.count }}</span>
+      </div>
+
+      <nav class="inline-flex items-center gap-2">
+        <!-- Prev -->
+        {% if page_obj.has_previous %}
+          <a
+            href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+            class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition"
+          >
+            ← Anterior
+          </a>
+        {% else %}
+          <span class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 text-slate-500 cursor-not-allowed">
+            ← Anterior
+          </span>
+        {% endif %}
+
+        <!-- Pages -->
+        <div class="hidden sm:inline-flex items-center gap-2">
+          {% with current=page_obj.number total=page_obj.paginator.num_pages %}
+            <a
+              href="?{% if q %}q={{ q|urlencode }}&{% endif %}page=1"
+              class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                     {% if current == 1 %}bg-white/15{% else %}bg-white/5 hover:bg-white/10{% endif %} transition"
+            >
+              1
+            </a>
+
+            {% if current > 4 %}
+              <span class="text-slate-500 px-1">…</span>
+            {% endif %}
+
+            {% for n in page_obj.paginator.page_range %}
+              {% if n != 1 and n != total and n >= current|add:"-2" and n <= current|add:"2" %}
+                <a
+                  href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ n }}"
+                  class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                         {% if n == current %}bg-white/15{% else %}bg-white/5 hover:bg-white/10{% endif %} transition"
+                >
+                  {{ n }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {% if current < total|add:"-3" %}
+              <span class="text-slate-500 px-1">…</span>
+            {% endif %}
+
+            {% if total > 1 %}
+              <a
+                href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ total }}"
+                class="h-9 min-w-[2.25rem] px-3 grid place-items-center rounded-xl text-sm border border-white/10
+                       {% if current == total %}bg-white/15{% else %}bg-white/5 hover:bg-white/10{% endif %} transition"
+              >
+                {{ total }}
+              </a>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <!-- Next -->
+        {% if page_obj.has_next %}
+          <a
+            href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+            class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition"
+          >
+            Próxima →
+          </a>
+        {% else %}
+          <span class="rounded-xl px-3 py-2 text-sm border border-white/10 bg-white/5 text-slate-500 cursor-not-allowed">
+            Próxima →
+          </span>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
+{% endblock %}
